@@ -7,8 +7,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class PlaylistAdapter(
-    private val playlists: List<Playlist>,
-//    private val onClick: (Playlist) -> Unit
+    private val playlists: List<Map<String, Playlist>>,
+    private val onClick: (Playlist) -> Unit
 ) : RecyclerView.Adapter<PlaylistAdapter.PlaylistViewHolder>() {
 
     class PlaylistViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -21,10 +21,13 @@ class PlaylistAdapter(
     }
 
     override fun onBindViewHolder(holder: PlaylistViewHolder, position: Int) {
-        val playlist = playlists[position]
+        val playlistMap = playlists[position]
+        val playlist = playlistMap.values.first() // Припускаємо, що в кожній мапі є один плейлист
         holder.title.text = playlist.title
-//        holder.itemView.setOnClickListener { onClick(playlist) }
+        holder.itemView.setOnClickListener { onClick(playlist) }
     }
 
     override fun getItemCount() = playlists.size
 }
+
+

@@ -10,11 +10,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.chaquo.python.Python
 import com.chaquo.python.android.AndroidPlatform
 import com.google.gson.Gson
@@ -26,6 +26,8 @@ import net.openid.appauth.AuthorizationServiceConfiguration
 import net.openid.appauth.ResponseTypeValues
 import org.json.JSONObject
 import java.io.File
+import androidx.recyclerview.widget.RecyclerView
+
 
 class LibFragment : Fragment(R.layout.fragment_lib) {
     private lateinit var authService: AuthorizationService
@@ -41,9 +43,7 @@ class LibFragment : Fragment(R.layout.fragment_lib) {
         val layout = view.findViewById<LinearLayout>(R.id.horizontalLayout)
         val plus = view.findViewById<ImageView>(R.id.plusIcon)
         authService = AuthorizationService(requireContext())
-        val tempDir = File(context?.cacheDir, "chaquopy/tmp")
-        val filePath = File(tempDir, "ytdata.json")
-//        val filePath = "/data/user/0/com.example.xmusic/cache/chaquopy/tmp/ytdata.json"
+        val filePath = File("/data/data/com.example.xmusic/files/chaquopy/AssetFinder/app/res/data/ytdata.json")
 
 
         val jsonString: String? = try {
@@ -52,27 +52,16 @@ class LibFragment : Fragment(R.layout.fragment_lib) {
             e.printStackTrace()
             null
         }
-//        val jsonString: String = filePath.bufferedReader().use { it.readText() }
 
         if (jsonString != null) {
-            // Розпарсування JSON
             val gson = Gson()
             val library: Library = gson.fromJson(jsonString, Library::class.java)
-
-                // Додавання плейлистів до LinearLayout всередині ScrollView
-                val scrollViewLayout: LinearLayout = view.findViewById(R.id.linearLayout)
-            val inflater = LayoutInflater.from(context)
-            for (playlistMap in library.playlists) {
-                for (playlist in playlistMap.values) {
-                    val view = inflater.inflate(R.layout.playlist_item, scrollViewLayout, false)
-                    val textView = view.findViewById<TextView>(R.id.playlist_title)
-                    textView.text = playlist.title
-                    textView.setOnClickListener {
-                        Toast.makeText(requireContext(), playlist.title, Toast.LENGTH_SHORT).show()
-                    }
-                    scrollViewLayout.addView(view)
-                }
+            val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
+            recyclerView.layoutManager = LinearLayoutManager(requireContext())
+            val adapter = PlaylistAdapter(library.playlists) { playlist ->
+                Toast.makeText(requireContext(), playlist.title, Toast.LENGTH_SHORT).show()
             }
+
         }
             plus.setOnClickListener {
             showDialogWindow()

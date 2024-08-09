@@ -60,8 +60,15 @@ def Ytauth(path):
             # YTM[playlist['playlistId']]['tracks'][id] = trck
             list[-1][playlist['playlistId']]["tracks"][id] = trck
     lib["playlists"] = list
-    temp_dir = os.getenv('TMPDIR', '/tmp')
-    path = os.path.join(temp_dir, "ytdata.json")
+    # temp_dir = os.getenv('TMPDIR', '/tmp')
+    # if not os.path.exists(temp_dir):
+    #     os.makedirs(temp_dir)
+    res_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'res')
+    data_dir = os.path.join(res_dir, 'data')
+    if not os.path.exists(data_dir):
+        os.makedirs(data_dir)
+
+    path = os.path.join(data_dir, "ytdata.json")
     with open(path,"w") as file:
         json.dump(lib, file)
     print(path)
