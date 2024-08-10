@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.chaquo.python.Python
@@ -43,6 +44,7 @@ class LibFragment : Fragment(R.layout.fragment_lib) {
         val layout = view.findViewById<LinearLayout>(R.id.horizontalLayout)
         val plus = view.findViewById<ImageView>(R.id.plusIcon)
         authService = AuthorizationService(requireContext())
+
         val filePath = File("/data/data/com.example.xmusic/files/chaquopy/AssetFinder/app/res/data/ytdata.json")
 
 
@@ -54,13 +56,26 @@ class LibFragment : Fragment(R.layout.fragment_lib) {
         }
 
         if (jsonString != null) {
+            // Розпарсування JSON
             val gson = Gson()
             val library: Library = gson.fromJson(jsonString, Library::class.java)
             val recyclerView: RecyclerView = view.findViewById(R.id.recyclerView)
             recyclerView.layoutManager = LinearLayoutManager(requireContext())
-            val adapter = PlaylistAdapter(library.playlists) { playlist ->
-                Toast.makeText(requireContext(), playlist.title, Toast.LENGTH_SHORT).show()
+            val adapter = context?.let {
+                PlaylistAdapter(it, library) { playlist ->
+        //                Toast.makeText(requireContext(), playlist.title, Toast.LENGTH_SHORT).show()
+                    val tracksFragment = TracksFragment.newInstance(playlist.id, library)
+
+                    // Заміна поточного фрагменту на фрагмент з треками
+                    val fragmentManager = (context as AppCompatActivity).supportFragmentManager
+                    fragmentManager.beginTransaction()
+                        .replace(R.id.tracks_fragment, tracksFragment)
+                        .addToBackStack(null)
+                        .commit()
+                }
             }
+            recyclerView.adapter = adapter
+
 
         }
             plus.setOnClickListener {

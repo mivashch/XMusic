@@ -51,11 +51,12 @@ def Ytauth(path):
                 print(f"Error: Missing artist name for track: {track}")
                 continue
 
-            print(f"Track: {title}, Artist: {artist_name}")
+            print(f"Track: {title}, Artist: {artist_name}, ID: {id}")
             trck = {
                 "title": title,
                 "artists": artists,
-                "duration": duration
+                "duration": duration,
+                "ID":id
             }
             # YTM[playlist['playlistId']]['tracks'][id] = trck
             list[-1][playlist['playlistId']]["tracks"][id] = trck
